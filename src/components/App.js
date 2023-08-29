@@ -5,17 +5,14 @@ import { nanoid } from 'nanoid';
 import { Filter } from './Filter/Filter';
 
 export const App = () => {
-    const [contacts, setContacts] = useState([]);
+    const initialContacts = () => {
+      const contacts = localStorage.getItem('contacts');
+      return JSON.parse(contacts) || [];
+    };
+
+    const [contacts, setContacts] = useState(initialContacts);
     const [filter, setFilter] = useState('');
 
-    useEffect(() => {
-        const contacts = localStorage.getItem('contacts');
-        const parsedContacts = JSON.parse(contacts);
-        if (parsedContacts !== null) {
-          setContacts(parsedContacts);
-        }
-      }, []);
-    
     useEffect(() => {
         localStorage.setItem('contacts', JSON.stringify(contacts));
       }, [contacts]);
@@ -24,7 +21,7 @@ export const App = () => {
         if (contacts.some(
             contact =>
             contact.name.toLowerCase() === name.toLowerCase() ||
-            contact.number.toLowerCase() === number.toLowerCase()
+            contact.number === number
             )
             ) {
               alert(`${name} or entered number is already in contacts.`);
@@ -36,7 +33,7 @@ export const App = () => {
           name,
           number,
         };
-        setContacts([newContact, ...contacts]);
+        setContacts(prevState => [newContact, ...prevState]);
       };
 
     const contactsFilterHandler = event => {
